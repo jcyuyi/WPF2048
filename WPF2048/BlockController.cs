@@ -23,7 +23,8 @@ namespace WPF2048
             }
         }
         public enum Direction { Up = 1, Down = 2, Right = 3, Left = 4 };
-        public Block[,] blocks = new Block[4, 4];
+        public Block[,] blocks      = new Block[4, 4];
+        public Block[,] movedBlocks = new Block[4, 4];// 0 means not move 
         //new game blocks
         public void initBlocks()
         {

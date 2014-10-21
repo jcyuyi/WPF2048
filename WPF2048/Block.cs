@@ -8,5 +8,6 @@ namespace WPF2048
     class Block
     {
         public int num { set; get; }
+        public int moved { set; get; } //move step count
     }
 }
