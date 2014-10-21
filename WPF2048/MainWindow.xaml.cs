@@ -66,9 +66,9 @@ namespace WPF2048
 
         private void tryDown()
         {
-            if (blockController.canMove(BlockController.Direction.Up))
+            if (blockController.canMove(BlockController.Direction.Down))
             {
-                blockController.move(BlockController.Direction.Up);
+                blockController.move(BlockController.Direction.Down);
                 drawBlocks();
             }
         }
