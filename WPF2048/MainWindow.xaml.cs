@@ -11,6 +11,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Diagnostics;
 
 namespace WPF2048
 {
@@ -65,6 +66,7 @@ namespace WPF2048
             {
                 blockController.move(BlockController.Direction.Up);
                 drawBlocks();
+                printBeforeMovedBlocks();
             }
         }
 
@@ -74,6 +76,7 @@ namespace WPF2048
             {
                 blockController.move(BlockController.Direction.Down);
                 drawBlocks();
+                printBeforeMovedBlocks();
             }
         }
 
@@ -83,6 +86,7 @@ namespace WPF2048
             {
                 blockController.move(BlockController.Direction.Left);
                 drawBlocks();
+                printBeforeMovedBlocks();
             }
         }
 
@@ -92,6 +96,7 @@ namespace WPF2048
             {
                 blockController.move(BlockController.Direction.Right);
                 drawBlocks();
+                printBeforeMovedBlocks();
             }
         }
 
@@ -127,6 +132,20 @@ namespace WPF2048
         private void btnNew_Click(object sender, RoutedEventArgs e)
         {
             newGame();
+        }
+
+        private void printBeforeMovedBlocks()
+        {
+            Debug.WriteLine("-------------------------------");
+            Block[,] blocks = blockController.beforeMovedBlocks;
+            for (int i = 0; i < 4; i++)
+            {
+                for (int j = 0; j < 4; j++)
+                {
+                    Debug.Write(blocks[i, j].movesteps.ToString() + " ");
+                }
+                Debug.Write("\n");
+            }
         }
     }
 }
