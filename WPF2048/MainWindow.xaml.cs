@@ -21,19 +21,27 @@ namespace WPF2048
     public partial class MainWindow : Window
     {
         BlockController blockController;
+        int score;
         public MainWindow()
         {
             InitializeComponent();
+            newGame();
         }
         private void newGame()
         {
             blockController = new BlockController();
             initBlocks();
             drawBlocks();
+            score = 0;
+            showScore();
         }
         private void initBlocks()
         {
             blockController.initBlocks();
+        }
+        private void showScore()
+        {
+            lbScore.Content = score;
         }
         private void drawBlocks()
         {
@@ -58,15 +66,31 @@ namespace WPF2048
                     grid.Children.Add(btn);
                 }
             }
+            printBeforeMovedBlocks();
+            showScore();
+            if (isDead())
+            {
+                MessageBox.Show("Game over!");
+            }
         }
-
+        private bool isDead()
+        {
+            if (!blockController.canMove(BlockController.Direction.Up) &&
+                !blockController.canMove(BlockController.Direction.Down)&&
+                !blockController.canMove(BlockController.Direction.Left)&&
+                !blockController.canMove(BlockController.Direction.Right)
+                )
+            {
+                return true;
+            }
+            return false;
+        }
         private void tryUp()
         {
             if (blockController.canMove(BlockController.Direction.Up))
             {
-                blockController.move(BlockController.Direction.Up);
+                score += blockController.move(BlockController.Direction.Up);
                 drawBlocks();
-                printBeforeMovedBlocks();
             }
         }
 
@@ -74,9 +98,8 @@ namespace WPF2048
         {
             if (blockController.canMove(BlockController.Direction.Down))
             {
-                blockController.move(BlockController.Direction.Down);
+                score += blockController.move(BlockController.Direction.Down);
                 drawBlocks();
-                printBeforeMovedBlocks();
             }
         }
 
@@ -84,9 +107,8 @@ namespace WPF2048
         {
             if (blockController.canMove(BlockController.Direction.Left))
             {
-                blockController.move(BlockController.Direction.Left);
+                score += blockController.move(BlockController.Direction.Left);
                 drawBlocks();
-                printBeforeMovedBlocks();
             }
         }
 
@@ -94,9 +116,8 @@ namespace WPF2048
         {
             if (blockController.canMove(BlockController.Direction.Right))
             {
-                blockController.move(BlockController.Direction.Right);
+                score += blockController.move(BlockController.Direction.Right);
                 drawBlocks();
-                printBeforeMovedBlocks();
             }
         }
 

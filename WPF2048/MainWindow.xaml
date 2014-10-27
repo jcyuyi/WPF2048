@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="WPF2048" Height="501.291" Width="740.567" MaxHeight="569.5" MinHeight="569.5" MaxWidth="754" MinWidth="754" KeyDown="Window_KeyDown">
     <Grid>
-        <Grid x:Name="grid" HorizontalAlignment="Left" Margin="10,10,0,10.5" Width="512" Height="512">
+        <Grid x:Name="grid" HorizontalAlignment="Left" Margin="10,10,0,10" Width="512" Height="512">
             <Grid.RowDefinitions>
                 <RowDefinition/>
                 <RowDefinition/>
@@ -17,9 +17,9 @@
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
         </Grid>
-        <Button x:Name="btn_new" Content="New game" HorizontalAlignment="Left" Margin="560,32,0,0" VerticalAlignment="Top" Width="156" Click="btnNew_Click"/>
-        <Label Content="Score:" HorizontalAlignment="Left" Margin="551,82,0,0" VerticalAlignment="Top"/>
-        <Label x:Name="lbScore" Content="0" HorizontalAlignment="Left" Margin="601,82,0,0" VerticalAlignment="Top" Width="138"/>
-        <TextBox HorizontalAlignment="Left" Height="36" Margin="527,472,0,0" TextWrapping="Wrap" Text="Use arrow keys to move blocks.   Use 'u' to undo last move." VerticalAlignment="Top" Width="212" IsEnabled="False"/>
+        <Button x:Name="btn_new" Content="New game" HorizontalAlignment="Left" Margin="560,32,0,0" VerticalAlignment="Top" Width="156" Click="btnNew_Click" FontSize="17"/>
+        <Label Content="Score:" HorizontalAlignment="Left" Margin="551,82,0,0" VerticalAlignment="Top" FontSize="17"/>
+        <Label x:Name="lbScore" Content="0" HorizontalAlignment="Left" Margin="615,82,0,0" VerticalAlignment="Top" Width="124" FontSize="17"/>
+        <TextBox HorizontalAlignment="Left" Height="36" Margin="527,472,0,0" TextWrapping="Wrap" Text="Use arrow keys to move blocks.   Use 'u' to undo last move." VerticalAlignment="Top" Width="189" IsEnabled="False"/>
     </Grid>
 </Window>
