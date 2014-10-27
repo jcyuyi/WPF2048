@@ -19,10 +19,14 @@ namespace WPF2048
     /// </summary>
     public partial class MainWindow : Window
     {
-        BlockController blockController = new BlockController();
+        BlockController blockController;
         public MainWindow()
         {
             InitializeComponent();
+        }
+        private void newGame()
+        {
+            blockController = new BlockController();
             initBlocks();
             drawBlocks();
         }
@@ -47,7 +51,7 @@ namespace WPF2048
                     btn.Content = blocks[i, j].num.ToString();
                     btn.FontSize = 48;
                     btn.Foreground = Brushes.SkyBlue;
-                    btn.Background = Brushes.LightGray;
+                    btn.Background = BlockColor.getBlockColorBrush(blocks[i,j]);
                     Grid.SetColumn(btn, j);
                     Grid.SetRow(btn, i);
                     grid.Children.Add(btn);
@@ -118,6 +122,11 @@ namespace WPF2048
                 default:
                     break;
             }
+        }
+
+        private void btnNew_Click(object sender, RoutedEventArgs e)
+        {
+            newGame();
         }
     }
 }
