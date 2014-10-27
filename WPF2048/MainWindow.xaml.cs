@@ -157,13 +157,13 @@ namespace WPF2048
 
         private void printBeforeMovedBlocks()
         {
-            Debug.WriteLine("-------------------------------");
-            Block[,] blocks = blockController.beforeMovedBlocks;
+            //Debug.WriteLine("-------------------------------");
+            Block[,] blocks = blockController.oldBlocks;
             for (int i = 0; i < 4; i++)
             {
                 for (int j = 0; j < 4; j++)
                 {
-                    Debug.Write(blocks[i, j].movesteps.ToString() + " ");
+                    //Debug.Write(blocks[i, j].movesteps.ToString() + " ");
                 }
                 Debug.Write("\n");
             }
