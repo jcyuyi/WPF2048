@@ -223,6 +223,7 @@ namespace WPF2048
                     assignBlocks(ref beforeMovedBlocks[Row, Column], ref blocks[Row, Column]);
 
                 }
+            int mynum = 0;
             if (n == 1)
             {
                 for (int Row = 0; Row < 4; Row++)
@@ -243,7 +244,7 @@ namespace WPF2048
                             break;
                         }
                     }
-                plusup();//here..................
+                plusup(ref mynum);//here..................
             }
             else if (n == 2)
             {
@@ -265,7 +266,7 @@ namespace WPF2048
                             break;
                         }
                     }
-                plusdown();//here..................
+                plusdown(ref mynum);//here..................
             }
 
             else if (n == 3)
@@ -289,7 +290,7 @@ namespace WPF2048
                             break;
                         }
                     }
-                plusleft();//here..................
+                plusleft(ref mynum);//here..................
             }
 
             else if (n == 4)
@@ -313,7 +314,7 @@ namespace WPF2048
                             break;
                         }
                     }
-                plusright();//here..................
+                plusright(ref mynum);//here..................
             }
             int sum = 0;
             for (int Row = 0; Row < 4; Row++)
@@ -344,10 +345,10 @@ namespace WPF2048
                         beforeMovedBlocks[t1, t2].status = blocks[Row, Column].status;
                     }
                 }
-            return 2; // 暂定每次移动合并后加 2 分
+            return mynum; // 暂定每次移动合并后加 2 分
         }
 
-        private void plusup()
+        private void plusup(ref int mynum)
         {
             for (int i = 0; i < 4; i++)
             {
@@ -355,12 +356,14 @@ namespace WPF2048
                 if (blocks[0, i].num != 0 && blocks[0, i].num == blocks[1, i].num)
                 {
                     a = blocks[0, i].num + blocks[1, i].num;
+                    mynum += a;
                     blocks[0, i].status = 2; // new
                     blocks[1, i].status = 1; //died
                     blocks[1, i].movesteps += 1;
                     if (blocks[2, i].num != 0 && blocks[2, i].num == blocks[3, i].num)
                     {
                         b = blocks[2, i].num + blocks[3, i].num;
+                        mynum += b;
                         blocks[2, i].status = 2; // new
                         blocks[3, i].status = 1; //died
                         blocks[2, i].movesteps += 1;
@@ -380,6 +383,7 @@ namespace WPF2048
                     if (blocks[1, i].num != 0 && blocks[1, i].num == blocks[2, i].num)
                     {
                         b = blocks[1, i].num + blocks[2, i].num;
+                        mynum += b;
                         c = blocks[3, i].num;
                         blocks[1, i].status = 2;
                         blocks[2, i].status = 1;
@@ -393,6 +397,7 @@ namespace WPF2048
                         if (blocks[2, i].num != 0 && blocks[2, i].num == blocks[3, i].num)
                         {
                             c = blocks[2, i].num + blocks[3, i].num;
+                            mynum += c;
                             blocks[2, i].status = 2;
                             blocks[3, i].status = 1;
                             blocks[3, i].movesteps += 1;
@@ -411,38 +416,60 @@ namespace WPF2048
 
             }
         }
-
-        private void plusdown()
+        private void plusdown(ref int mynum)
         {
             for (int i = 0; i < 4; i++)
             {
                 int a = 0, b = 0, c = 0, d = 0;
-                if (blocks[3, i].num == blocks[2, i].num)
+                if (blocks[3, i].num != 0 && blocks[3, i].num == blocks[2, i].num)
                 {
                     a = blocks[3, i].num + blocks[2, i].num;
-                    if (blocks[1, i].num == blocks[0, i].num)
+                    mynum += a;
+                    blocks[3, i].status = 2; // new
+                    blocks[2, i].status = 1; //died
+                    blocks[2, i].movesteps += 1;
+                    if (blocks[1, i].num != 0 && blocks[1, i].num == blocks[0, i].num)
                     {
                         b = blocks[1, i].num + blocks[0, i].num;
+                        mynum += b;
+                        blocks[1, i].status = 2; // new
+                        blocks[0, i].status = 1; //died
+                        blocks[1, i].movesteps += 1;
+                        blocks[0, i].movesteps += 2;
+
                     }
                     else
                     {
                         b = blocks[1, i].num;
                         c = blocks[0, i].num;
+                        blocks[1, i].movesteps += 1;
+                        blocks[0, i].movesteps += 1;
                     }
                 }
                 else
                 {
                     a = blocks[3, i].num;
-                    if (blocks[2, i].num == blocks[1, i].num)
+                    if (blocks[2, i].num != 0 && blocks[2, i].num == blocks[1, i].num)
                     {
                         b = blocks[2, i].num + blocks[1, i].num;
+                        mynum += b;
                         c = blocks[0, i].num;
+                        blocks[2, i].status = 2;
+                        blocks[1, i].status = 1;
+                        blocks[1, i].movesteps += 1;
+                        blocks[0, i].movesteps += 1;
                     }
                     else
                     {
                         b = blocks[2, i].num;
-                        if (blocks[1, i].num == blocks[0, i].num)
+                        if (blocks[1, i].num != 0 && blocks[1, i].num == blocks[0, i].num)
+                        {
                             c = blocks[1, i].num + blocks[0, i].num;
+                            mynum += c;
+                            blocks[1, i].status = 2;
+                            blocks[0, i].status = 1;
+                            blocks[0, i].movesteps += 1;
+                        }
                         else
                         {
                             c = blocks[1, i].num;
@@ -457,37 +484,59 @@ namespace WPF2048
 
             }
         }
-        private void plusleft()
+        private void plusleft(ref int mynum)
         {
             for (int i = 0; i < 4; i++)
             {
                 int a = 0, b = 0, c = 0, d = 0;
-                if (blocks[i, 0].num == blocks[i, 1].num)
+                if (blocks[i, 0].num != 0 && blocks[i, 0].num == blocks[i, 1].num)
                 {
                     a = blocks[i, 0].num + blocks[i, 1].num;
-                    if (blocks[i, 2].num == blocks[i, 3].num)
+                    mynum += a;
+                    blocks[i, 0].status = 2; // new
+                    blocks[i, 1].status = 1; //died
+                    blocks[i, 1].movesteps += 1;
+                    if (blocks[i, 2].num != 0 && blocks[i, 2].num == blocks[i, 3].num)
                     {
                         b = blocks[i, 2].num + blocks[i, 3].num;
+                        mynum += b;
+                        blocks[i, 2].status = 2; // new
+                        blocks[i, 3].status = 1; //died
+                        blocks[i, 2].movesteps += 1;
+                        blocks[i, 3].movesteps += 2;
                     }
                     else
                     {
                         b = blocks[i, 2].num;
                         c = blocks[i, 3].num;
+                        blocks[i, 2].movesteps += 1;
+                        blocks[i, 3].movesteps += 1;
                     }
                 }
                 else
                 {
                     a = blocks[i, 0].num;
-                    if (blocks[i, 1].num == blocks[i, 2].num)
+                    if (blocks[i, 1].num != 0 && blocks[i, 1].num == blocks[i, 2].num)
                     {
                         b = blocks[i, 1].num + blocks[i, 2].num;
+                        mynum += b;
                         c = blocks[i, 3].num;
+                        blocks[i, 1].status = 2;
+                        blocks[i, 2].status = 1;
+                        blocks[i, 2].movesteps += 1;
+                        blocks[i, 3].movesteps += 1;
                     }
                     else
                     {
                         b = blocks[i, 1].num;
-                        if (blocks[i, 2].num == blocks[i, 3].num)
+                        if (blocks[i, 2].num != 0 && blocks[i, 2].num == blocks[i, 3].num)
+                        {
                             c = blocks[i, 2].num + blocks[i, 3].num;
+                            mynum += c;
+                            blocks[i, 2].status = 2;
+                            blocks[i, 3].status = 1;
+                            blocks[i, 3].movesteps += 1;
+                        }
                         else
                         {
                             c = blocks[i, 2].num;
@@ -502,37 +551,59 @@ namespace WPF2048
 
             }
         }
-        private void plusright()
+        private void plusright(ref int mynum)
         {
             for (int i = 0; i < 4; i++)
             {
                 int a = 0, b = 0, c = 0, d = 0;
-                if (blocks[i, 3].num == blocks[i, 2].num)
+                if (blocks[i, 3].num != 0 && blocks[i, 3].num == blocks[i, 2].num)
                 {
                     a = blocks[i, 3].num + blocks[i, 2].num;
-                    if (blocks[i, 1].num == blocks[i, 0].num)
+                    mynum += a;
+                    blocks[i, 3].status = 2; // new
+                    blocks[i, 2].status = 1; //died
+                    blocks[i, 2].movesteps += 1;
+                    if (blocks[i, 1].num != 0 && blocks[i, 1].num == blocks[i, 0].num)
                     {
                         b = blocks[i, 1].num + blocks[i, 0].num;
+                        mynum += b;
+                        blocks[i, 1].status = 2; // new
+                        blocks[i, 0].status = 1; //died
+                        blocks[i, 1].movesteps += 1;
+                        blocks[i, 0].movesteps += 2;
                     }
                     else
                     {
                         b = blocks[i, 1].num;
                         c = blocks[i, 0].num;
+                        blocks[i, 1].movesteps += 1;
+                        blocks[i, 0].movesteps += 1;
                     }
                 }
                 else
                 {
                     a = blocks[i, 3].num;
-                    if (blocks[i, 2].num == blocks[i, 1].num)
+                    if (blocks[i, 2].num != 0 && blocks[i, 2].num == blocks[i, 1].num)
                     {
                         b = blocks[i, 2].num + blocks[i, 1].num;
+                        mynum += b;
                         c = blocks[i, 0].num;
+                        blocks[i, 2].status = 2;
+                        blocks[i, 1].status = 1;
+                        blocks[i, 1].movesteps += 1;
+                        blocks[i, 0].movesteps += 1;
                     }
                     else
                     {
                         b = blocks[i, 2].num;
-                        if (blocks[i, 1].num == blocks[i, 0].num)
+                        if (blocks[i, 1].num != 0 && blocks[i, 1].num == blocks[i, 0].num)
+                        {
                             c = blocks[i, 1].num + blocks[i, 0].num;
+                            mynum += c;
+                            blocks[i, 1].status = 2;
+                            blocks[i, 0].status = 1;
+                            blocks[i, 0].movesteps += 1;
+                        }
                         else
                         {
                             c = blocks[i, 1].num;
