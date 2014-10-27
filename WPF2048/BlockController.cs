@@ -47,7 +47,7 @@ namespace WPF2048
         // move blocks
         public int move(Direction dir)
         {
-            printBlocks(blocks, "before trans");
+            //printBlocks(blocks, "before trans");
             Block[,] tBlocks = transformToLeft(dir);
            // printBlocks(tBlocks, "after trans");
 
@@ -58,7 +58,7 @@ namespace WPF2048
             oldBlocks = transformBack(dir, tOldBlocks);
             //printBlocks(tBlocks, "before move");
             blocks = transformBack(dir, tBlocks);
-            printBlocks(blocks, "before move and trans back");
+            //printBlocks(blocks, "before move and trans back");
             generateABlock();
             return score;
         }
@@ -275,6 +275,7 @@ namespace WPF2048
 
         private int moveLeft(ref Block[,] blks, ref Block[,] oldBlks)
         {
+            clearBlocksStatus(ref oldBlks);
             int score = 0;
             for (int row = 0; row < 4; row++)
             {
@@ -349,7 +350,7 @@ namespace WPF2048
                                 oldBlks[row, startCol].status = Block.BlockStatus.Moved;
                                 oldBlks[row, startCol].movesteps = startCol - emptyCol;
                                 oldBlks[row, endCol].status = Block.BlockStatus.Moved;
-                                oldBlks[row, endCol].movesteps = endCol - emptyCol;
+                                oldBlks[row, endCol].movesteps = endCol - emptyCol - 1;
 
                                 emptyCol = emptyCol + 2;
                                 startCol = endCol + 1;
@@ -381,6 +382,10 @@ namespace WPF2048
                             // clean old blocks 
                             clearBlocks(ref blks[row, endCol]);
 
+                            oldBlks[row, endCol].movesteps = endCol - startCol;
+                            oldBlks[row, endCol].status = Block.BlockStatus.Moved;
+                            oldBlks[row, startCol].status = Block.BlockStatus.Combined;
+
                             emptyCol = emptyCol + 1;
                             startCol = endCol + 1;
                             endCol = startCol + 2;
@@ -396,14 +401,14 @@ namespace WPF2048
             }
             return score;
         }
-        private void printBlocks(Block[,] blks,String msg)
+        public void printBlocks(Block[,] blks,String msg)
         {
             Debug.WriteLine("--------- " + msg + "  -----------");
             for (int row = 0; row < 4; row++)
             {
                 for (int col = 0; col < 4; col++)
                 {
-                    Debug.Write(blks[row, col].num.ToString() + " ");
+                    Debug.Write(blks[row, col].status.ToString() + " ");
                 }
                 Debug.Write("\n");
             }

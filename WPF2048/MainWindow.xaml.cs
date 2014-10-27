@@ -12,6 +12,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Diagnostics;
+using System.Windows.Media.Animation;
 
 namespace WPF2048
 {
@@ -20,77 +21,124 @@ namespace WPF2048
     /// </summary>
     public partial class MainWindow : Window
     {
+        Storyboard myStoryboard;
         BlockController blockController;
+        DoubleAnimation doubleAnimation;
         int score;
+        Button[,] btnArray;
         public MainWindow()
         {
             InitializeComponent();
+            doubleAnimation = new DoubleAnimation();
+            doubleAnimation.Duration = TimeSpan.FromSeconds(0.2);
+            doubleAnimation.From = 48;
+            doubleAnimation.To = 75;
+            myStoryboard = new Storyboard();
+            myStoryboard.Children.Add(doubleAnimation);
+            doubleAnimation.AutoReverse = true;
             newGame();
         }
+
         private void newGame()
         {
             blockController = new BlockController();
-            initBlocks();
-            drawBlocks();
             score = 0;
-            showScore();
+            initBlocks();
+            moveBlocks();
         }
+
         private void initBlocks()
         {
             blockController.initBlocks();
         }
+
+        private void moveBlocks()
+        {
+            drawNewBlocks();
+            combineAnimation();
+            showScore();
+            isDead();
+        }
+
+        private void isDead()
+        {
+            if (!blockController.canMove(BlockController.Direction.Down)&&
+                !blockController.canMove(BlockController.Direction.Up)&&
+                !blockController.canMove(BlockController.Direction.Left)&&
+                !blockController.canMove(BlockController.Direction.Right)
+                )
+            {
+                MessageBox.Show("Game over! Your score: " + score);
+            }
+        }
+
         private void showScore()
         {
             lbScore.Content = score;
         }
-        private void drawBlocks()
+
+        private void drawNewBlocks()
         {
             grid.Children.Clear();
             Block[,] blocks = blockController.blocks;
-            for (int i = 0; i < 4; i++)
+            btnArray = new Button[4, 4];
+            for (int row = 0; row < 4; row++)
             {
-                for (int j = 0; j < 4; j++)
+                for (int col = 0; col < 4; col++)
                 {
-                    if (blocks[i, j].num == 0)
+                    if (blocks[row, col].num == 0)
                     {
                         continue;
                     }
                     Button btn = new Button();
                     //btn.IsEnabled = false;
-                    btn.Content = blocks[i, j].num.ToString();
+                    btn.Content = blocks[row, col].num.ToString();
                     btn.FontSize = 48;
                     btn.Foreground = Brushes.SkyBlue;
-                    btn.Background = BlockColor.getBlockColorBrush(blocks[i,j]);
-                    Grid.SetColumn(btn, j);
-                    Grid.SetRow(btn, i);
+                    btn.Background = BlockColor.getBlockColorBrush(blocks[row, col]);
+                    Grid.SetColumn(btn, col);
+                    Grid.SetRow(btn, row);
                     grid.Children.Add(btn);
+                    btn.Name = "btn" + row + col;
+                    try
+                    {
+                        this.UnregisterName(btn.Name);
+                    }
+                    catch { } //try Unregister 
+                    this.RegisterName(btn.Name, btn);
+                    btnArray[row, col] = btn;
                 }
             }
-            printBeforeMovedBlocks();
-            showScore();
-            if (isDead())
-            {
-                MessageBox.Show("Game over!");
-            }
         }
-        private bool isDead()
+        private void combineAnimation()
         {
-            if (!blockController.canMove(BlockController.Direction.Up) &&
-                !blockController.canMove(BlockController.Direction.Down)&&
-                !blockController.canMove(BlockController.Direction.Left)&&
-                !blockController.canMove(BlockController.Direction.Right)
-                )
+            Block[,] oldBlocks = blockController.oldBlocks;
+            bool flag = false;
+            for (int row = 0; row < 4; row++)
             {
-                return true;
+                for (int col = 0; col < 4; col++)
+                {
+                    if (oldBlocks[row, col].status == Block.BlockStatus.Combined)
+                    {
+                        Button btn = btnArray[row, col];
+                        Storyboard.SetTargetName(doubleAnimation, btn.Name);
+                        Storyboard.SetTargetProperty(doubleAnimation, new PropertyPath(Button.FontSizeProperty));
+                        flag = true;
+                    }
+                }
             }
-            return false;
+            if (flag)
+            {
+                myStoryboard.Begin(this);
+            }
         }
         private void tryUp()
         {
             if (blockController.canMove(BlockController.Direction.Up))
             {
                 score += blockController.move(BlockController.Direction.Up);
-                drawBlocks();
+                moveBlocks();
+                printBeforeMovedBlocks();
             }
         }
 
@@ -99,7 +147,8 @@ namespace WPF2048
             if (blockController.canMove(BlockController.Direction.Down))
             {
                 score += blockController.move(BlockController.Direction.Down);
-                drawBlocks();
+                moveBlocks();
+                printBeforeMovedBlocks();
             }
         }
 
@@ -108,7 +157,8 @@ namespace WPF2048
             if (blockController.canMove(BlockController.Direction.Left))
             {
                 score += blockController.move(BlockController.Direction.Left);
-                drawBlocks();
+                moveBlocks();
+                printBeforeMovedBlocks();
             }
         }
 
@@ -117,22 +167,16 @@ namespace WPF2048
             if (blockController.canMove(BlockController.Direction.Right))
             {
                 score += blockController.move(BlockController.Direction.Right);
-                drawBlocks();
+                moveBlocks();
+                printBeforeMovedBlocks();
             }
         }
 
-        private void undoMove()
-        {
-
-        }
 
         private void Window_KeyDown(object sender, KeyEventArgs e)
         {
             switch (e.Key)
             {
-                case Key.U:
-                    undoMove();
-                    break;
                 case Key.Up:
                     tryUp();
                     break;
@@ -155,15 +199,16 @@ namespace WPF2048
             newGame();
         }
 
+        // For debug
         private void printBeforeMovedBlocks()
         {
-            //Debug.WriteLine("-------------------------------");
+            Debug.WriteLine("------------ Old ------------");
             Block[,] blocks = blockController.oldBlocks;
-            for (int i = 0; i < 4; i++)
+            for (int row = 0; row < 4; row++)
             {
-                for (int j = 0; j < 4; j++)
+                for (int col = 0; col < 4; col++)
                 {
-                    //Debug.Write(blocks[i, j].movesteps.ToString() + " ");
+                    Debug.Write(blocks[row, col].movesteps.ToString() + " ");
                 }
                 Debug.Write("\n");
             }
