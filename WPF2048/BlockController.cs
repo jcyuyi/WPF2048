@@ -23,33 +23,55 @@ namespace WPF2048
             }
         }
         public enum Direction { Up = 1, Down = 2, Right = 3, Left = 4 };
-        public Block[,] blocks      = new Block[4, 4];
-        public Block[,] movedBlocks = new Block[4, 4];// 0 means not move 
+        public Block[,] blocks = new Block[4, 4];
+        public Block[,] beforeMovedBlocks = new Block[4, 4];// 0 means not move 
         //new game blocks
         public void initBlocks()
         {
-            for (int j = 0; j < 4; j++)
-                for (int k = 0; k < 4; k++)
+            for (int Row = 0; Row < 4; Row++)
+                for (int Column = 0; Column < 4; Column++)
                 {
-                    blocks[j, k] = new Block();
-                    blocks[j, k].num = 0;
+                    blocks[Row, Column] = new Block();
+                    blocks[Row, Column].num = 0;
                 }
-                  
-            int Line = MRandom.getRandomNumber(0, 4);
-            int Row = MRandom.getRandomNumber(0, 4);
-            blocks[Line, Row].num = 2;
-            int a = Line;
-            int b = Row;
-            do
-            {
-                Line = MRandom.getRandomNumber(0, 4);
-            } while (Line == a);
-            do
-            {
-                Row = MRandom.getRandomNumber(0, 4);
-            } while (Row == b);
-            blocks[Line, Row].num = 2;
+            for (int Row = 0; Row < 4; Row++)
+                for (int Column = 0; Column < 4; Column++)
+                {
+                    beforeMovedBlocks[Row, Column] = new Block();
+                    beforeMovedBlocks[Row, Column].num = 0;
+                }
 
+            int startRow = MRandom.getRandomNumber(0, 4);
+            int startColumn = MRandom.getRandomNumber(0, 4);
+            blocks[startRow, startColumn].num = 2;
+            int secondStartRow = startRow;
+            int secondStartColumn = startColumn;
+            do
+            {
+                secondStartRow = MRandom.getRandomNumber(0, 4);
+            } while (secondStartRow == startRow);
+            do
+            {
+                secondStartColumn = MRandom.getRandomNumber(0, 4);
+            } while (secondStartColumn == startColumn);
+            blocks[secondStartRow, secondStartColumn].num = 2;
+
+        }
+        private void assignBlocks(ref Block a, ref Block b)// first Para is Target, second Para is source, First<=Secend
+        {
+            a.movesteps = b.movesteps;
+            a.status = b.status;
+            a.num = b.num;
+            a.oldColumn = b.oldColumn;
+            a.oldRow = b.oldRow;
+        }
+        private void clearBlocks(ref Block a) // Reset Blocks Object to 0;
+        {
+            a.movesteps = 0;
+            a.status = 0;
+            a.num = 0;
+            a.oldColumn = 0;
+            a.oldRow = 0;
         }
 
 
@@ -76,64 +98,97 @@ namespace WPF2048
                     break;
             }
             if (n == 1)
-                for (int j = 0; j < 4; j++)
-                    for (int k = 3; k >= 0; k--)
+            {
+                for (int Row = 0; Row < 4; Row++)
+                    for (int Column = 3; Column >= 0; Column--)
                     {
-                        if (blocks[k, j].num != 0)
+                        if (blocks[Column, Row].num != 0)
                         {
-                            int p = k - 1;
+                            int p = Column - 1;
                             for (; p >= 0; p--)
                             {
-                                if (blocks[p, j].num == 0)
+                                if (blocks[p, Row].num == 0)
                                     return true;
                             }
                         }
                     }
+                for (int Row = 0; Row < 4; Row++)
+                    for (int Column = 1; Column <= 3; Column++)
+                    {
+                        if (blocks[Column, Row].num != 0 && blocks[Column, Row].num == blocks[Column - 1, Row].num)
+                            return true;
+                    }
+            }
 
             else if (n == 2)
-                for (int j = 0; j < 4; j++)
-                    for (int k = 0; k < 4; k++)
+            {
+                for (int Row = 0; Row < 4; Row++)
+                    for (int Column = 0; Column < 4; Column++)
                     {
-                        if (blocks[k, j].num != 0)
+                        if (blocks[Column, Row].num != 0)
                         {
-                            int p = k + 1;
+                            int p = Column + 1;
                             for (; p < 4; p++)
                             {
-                                if (blocks[p, j].num == 0)
+                                if (blocks[p, Row].num == 0)
                                     return true;
                             }
                         }
                     }
+                for (int Row = 0; Row < 4; Row++)
+                    for (int Column = 1; Column <= 3; Column++)
+                    {
+                        if (blocks[Column, Row].num != 0 && blocks[Column, Row].num == blocks[Column - 1, Row].num)
+                            return true;
+                    }
+            }
 
             else if (n == 3)
-                for (int j = 0; j < 4; j++)
-                    for (int k = 3; k >= 0; k--)
+            {
+                for (int Row = 0; Row < 4; Row++)
+                    for (int Column = 3; Column >= 0; Column--)
                     {
-                        if (blocks[j, k].num != 0)
+                        if (blocks[Row, Column].num != 0)
                         {
-                            int p = k - 1;
+                            int p = Column - 1;
                             for (; p >= 0; p--)
                             {
-                                if (blocks[j, p].num == 0)
+                                if (blocks[Row, p].num == 0)
                                     return true;
                             }
                         }
+                    }
+                for (int Row = 0; Row < 4; Row++)
+                    for (int Column = 1; Column <= 3; Column++)
+                    {
+                        if (blocks[Row, Column].num != 0 && blocks[Row, Column].num == blocks[Row, Column - 1].num)
+                            return true;
                     }
 
+            }
+
             else if (n == 4)
-                for (int j = 0; j < 4; j++)
-                    for (int k = 0; k < 4; k++)
+            {
+                for (int Row = 0; Row < 4; Row++)
+                    for (int Column = 0; Column < 4; Column++)
                     {
-                        if (blocks[j, k].num != 0)
+                        if (blocks[Row, Column].num != 0)
                         {
-                            int p = k + 1;
+                            int p = Column + 1;
                             for (; p < 4; p++)
                             {
-                                if (blocks[j, p].num == 0)
+                                if (blocks[Row, p].num == 0)
                                     return true;
                             }
                         }
                     }
+                for (int Row = 0; Row < 4; Row++)
+                    for (int Column = 1; Column <= 3; Column++)
+                    {
+                        if (blocks[Row, Column].num != 0 && blocks[Row, Column].num == blocks[Row, Column - 1].num)
+                            return true;
+                    }
+            }
 
             return false;
 
@@ -158,20 +213,31 @@ namespace WPF2048
                 default:
                     break;
             }
+            for (int Row = 0; Row < 4; Row++)
+                for (int Column = 0; Column < 4; Column++)
+                {
+                    blocks[Row, Column].movesteps = 0;
+                    blocks[Row, Column].status = 0;
+                    blocks[Row, Column].oldColumn = Column;
+                    blocks[Row, Column].oldRow = Row;
+                    assignBlocks(ref beforeMovedBlocks[Row, Column], ref blocks[Row, Column]);
+
+                }
             if (n == 1)
             {
-                for (int j = 0; j < 4; j++)
-                    for (int k = 3; k >= 0; k--)
+                for (int Row = 0; Row < 4; Row++)
+                    for (int Column = 3; Column >= 0; Column--)
                     {
-                        if (blocks[k, j].num != 0)
+                        if (blocks[Column, Row].num != 0)
                         {
                             for (int t = 0; t < 4; t++)
                                 for (int p = 1; p < 4; p++)
                                 {
-                                    if (blocks[p - 1, j].num == 0)
+                                    if (blocks[p - 1, Row].num == 0)
                                     {
-                                        blocks[p - 1, j].num = blocks[p, j].num;
-                                        blocks[p, j].num = 0;
+                                        blocks[p, Row].movesteps += 1;
+                                        assignBlocks(ref blocks[p - 1, Row], ref blocks[p, Row]);
+                                        clearBlocks(ref blocks[p, Row]);
                                     }
                                 }
                             break;
@@ -181,18 +247,19 @@ namespace WPF2048
             }
             else if (n == 2)
             {
-                for (int j = 0; j < 4; j++)
-                    for (int k = 0; k < 4; k++)
+                for (int Row = 0; Row < 4; Row++)
+                    for (int Column = 0; Column < 4; Column++)
                     {
-                        if (blocks[k, j].num != 0)
+                        if (blocks[Column, Row].num != 0)
                         {
                             for (int t = 0; t < 4; t++)
                                 for (int p = 2; p >= 0; p--)
                                 {
-                                    if (blocks[p + 1, j].num == 0)
+                                    if (blocks[p + 1, Row].num == 0)
                                     {
-                                        blocks[p + 1, j].num = blocks[p, j].num;
-                                        blocks[p, j].num = 0;
+                                        blocks[p, Row].movesteps += 1;
+                                        assignBlocks(ref blocks[p + 1, Row], ref blocks[p, Row]);
+                                        clearBlocks(ref blocks[p, Row]);
                                     }
                                 }
                             break;
@@ -204,18 +271,19 @@ namespace WPF2048
             else if (n == 3)
             {
 
-                for (int j = 0; j < 4; j++)
-                    for (int k = 3; k >= 0; k--)
+                for (int Row = 0; Row < 4; Row++)
+                    for (int Column = 3; Column >= 0; Column--)
                     {
-                        if (blocks[j, k].num != 0)
+                        if (blocks[Row, Column].num != 0)
                         {
                             for (int t = 0; t < 4; t++)
                                 for (int p = 1; p < 4; p++)
                                 {
-                                    if (blocks[j, p - 1].num == 0)
+                                    if (blocks[Row, p - 1].num == 0)
                                     {
-                                        blocks[j, p - 1].num = blocks[j, p].num;
-                                        blocks[j, p].num = 0;
+                                        blocks[Row, p].movesteps += 1;
+                                        assignBlocks(ref blocks[Row, p - 1], ref blocks[Row, p]);
+                                        clearBlocks(ref blocks[Row, p]);
                                     }
                                 }
                             break;
@@ -227,18 +295,19 @@ namespace WPF2048
             else if (n == 4)
             {
 
-                for (int j = 0; j < 4; j++)
-                    for (int k = 0; k < 4; k++)
+                for (int Row = 0; Row < 4; Row++)
+                    for (int Column = 0; Column < 4; Column++)
                     {
-                        if (blocks[j, k].num != 0)
+                        if (blocks[Row, Column].num != 0)
                         {
                             for (int t = 0; t < 4; t++)
                                 for (int p = 2; p >= 0; p--)
                                 {
-                                    if (blocks[j, p + 1].num == 0)
+                                    if (blocks[Row, p + 1].num == 0)
                                     {
-                                        blocks[j, p + 1].num = blocks[j, p].num;
-                                        blocks[j, p].num = 0;
+                                        blocks[Row, p].movesteps += 1;
+                                        assignBlocks(ref blocks[Row, p + 1], ref blocks[Row, p]);
+                                        clearBlocks(ref blocks[Row, p]);
                                     }
                                 }
                             break;
@@ -247,10 +316,10 @@ namespace WPF2048
                 plusright();//here..................
             }
             int sum = 0;
-            for (int j = 0; j < 4; j++)
-                for (int k = 0; k < 4; k++)
+            for (int Row = 0; Row < 4; Row++)
+                for (int Column = 0; Column < 4; Column++)
                 {
-                    if (blocks[j, k].num != 0)
+                    if (blocks[Row, Column].num != 0)
                         sum++;
                 }
             if (sum == 16)
@@ -263,40 +332,71 @@ namespace WPF2048
             } while (blocks[TempLine, TempRow].num != 0);
             blocks[TempLine, TempRow].num = 2;
 
-
+            for (int Row = 0; Row < 4; Row++)
+                for (int Column = 0; Column < 4; Column++)
+                {
+                    int t1, t2;
+                    if (blocks[Row, Column].num != 0 || blocks[Row, Column].movesteps > 0)
+                    {
+                        t1 = blocks[Row, Column].oldRow;
+                        t2 = blocks[Row, Column].oldColumn;
+                        beforeMovedBlocks[t1, t2].movesteps = blocks[Row, Column].movesteps;
+                        beforeMovedBlocks[t1, t2].status = blocks[Row, Column].status;
+                    }
+                }
             return 2; // 暂定每次移动合并后加 2 分
         }
+
         private void plusup()
         {
             for (int i = 0; i < 4; i++)
             {
                 int a = 0, b = 0, c = 0, d = 0;
-                if (blocks[0, i].num == blocks[1, i].num)
+                if (blocks[0, i].num != 0 && blocks[0, i].num == blocks[1, i].num)
                 {
                     a = blocks[0, i].num + blocks[1, i].num;
-                    if (blocks[2, i].num == blocks[3, i].num)
+                    blocks[0, i].status = 2; // new
+                    blocks[1, i].status = 1; //died
+                    blocks[1, i].movesteps += 1;
+                    if (blocks[2, i].num != 0 && blocks[2, i].num == blocks[3, i].num)
                     {
                         b = blocks[2, i].num + blocks[3, i].num;
+                        blocks[2, i].status = 2; // new
+                        blocks[3, i].status = 1; //died
+                        blocks[2, i].movesteps += 1;
+                        blocks[3, i].movesteps += 2;
                     }
                     else
                     {
                         b = blocks[2, i].num;
                         c = blocks[3, i].num;
+                        blocks[2, i].movesteps += 1;
+                        blocks[3, i].movesteps += 1;
                     }
                 }
                 else
                 {
                     a = blocks[0, i].num;
-                    if (blocks[1, i].num == blocks[2, i].num)
+                    if (blocks[1, i].num != 0 && blocks[1, i].num == blocks[2, i].num)
                     {
                         b = blocks[1, i].num + blocks[2, i].num;
                         c = blocks[3, i].num;
+                        blocks[1, i].status = 2;
+                        blocks[2, i].status = 1;
+                        blocks[2, i].movesteps += 1;
+                        blocks[3, i].movesteps += 1;
+
                     }
                     else
                     {
                         b = blocks[1, i].num;
-                        if (blocks[2, i].num == blocks[3, i].num)
+                        if (blocks[2, i].num != 0 && blocks[2, i].num == blocks[3, i].num)
+                        {
                             c = blocks[2, i].num + blocks[3, i].num;
+                            blocks[2, i].status = 2;
+                            blocks[3, i].status = 1;
+                            blocks[3, i].movesteps += 1;
+                        }
                         else
                         {
                             c = blocks[2, i].num;
@@ -311,6 +411,7 @@ namespace WPF2048
 
             }
         }
+
         private void plusdown()
         {
             for (int i = 0; i < 4; i++)
