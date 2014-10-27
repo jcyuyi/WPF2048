@@ -55,8 +55,8 @@ namespace WPF2048
                 secondStartColumn = MRandom.getRandomNumber(0, 4);
             } while (secondStartColumn == startColumn);
             blocks[secondStartRow, secondStartColumn].num = 2;
-
         }
+
         private void assignBlocks(ref Block a, ref Block b)// first Para is Target, second Para is source, First<=Secend
         {
             a.movesteps = b.movesteps;
@@ -65,6 +65,7 @@ namespace WPF2048
             a.oldColumn = b.oldColumn;
             a.oldRow = b.oldRow;
         }
+
         private void clearBlocks(ref Block a) // Reset Blocks Object to 0;
         {
             a.movesteps = 0;
@@ -74,125 +75,41 @@ namespace WPF2048
             a.oldRow = 0;
         }
 
-
-
         //judge if can move any block to direction
         public bool canMove(Direction dir)
         {
-            int n = 1;
-            switch (dir)
-            {
-                case Direction.Up:
-                    n = 1;
-                    break;
-                case Direction.Down:
-                    n = 2;
-                    break;
-                case Direction.Right:
-                    n = 4;
-                    break;
-                case Direction.Left:
-                    n = 3;
-                    break;
-                default:
-                    break;
-            }
-            if (n == 1)
-            {
-                for (int Row = 0; Row < 4; Row++)
-                    for (int Column = 3; Column >= 0; Column--)
-                    {
-                        if (blocks[Column, Row].num != 0)
-                        {
-                            int p = Column - 1;
-                            for (; p >= 0; p--)
-                            {
-                                if (blocks[p, Row].num == 0)
-                                    return true;
-                            }
-                        }
-                    }
-                for (int Row = 0; Row < 4; Row++)
-                    for (int Column = 1; Column <= 3; Column++)
-                    {
-                        if (blocks[Column, Row].num != 0 && blocks[Column, Row].num == blocks[Column - 1, Row].num)
-                            return true;
-                    }
-            }
-
-            else if (n == 2)
-            {
-                for (int Row = 0; Row < 4; Row++)
-                    for (int Column = 0; Column < 4; Column++)
-                    {
-                        if (blocks[Column, Row].num != 0)
-                        {
-                            int p = Column + 1;
-                            for (; p < 4; p++)
-                            {
-                                if (blocks[p, Row].num == 0)
-                                    return true;
-                            }
-                        }
-                    }
-                for (int Row = 0; Row < 4; Row++)
-                    for (int Column = 1; Column <= 3; Column++)
-                    {
-                        if (blocks[Column, Row].num != 0 && blocks[Column, Row].num == blocks[Column - 1, Row].num)
-                            return true;
-                    }
-            }
-
-            else if (n == 3)
-            {
-                for (int Row = 0; Row < 4; Row++)
-                    for (int Column = 3; Column >= 0; Column--)
-                    {
-                        if (blocks[Row, Column].num != 0)
-                        {
-                            int p = Column - 1;
-                            for (; p >= 0; p--)
-                            {
-                                if (blocks[Row, p].num == 0)
-                                    return true;
-                            }
-                        }
-                    }
-                for (int Row = 0; Row < 4; Row++)
-                    for (int Column = 1; Column <= 3; Column++)
-                    {
-                        if (blocks[Row, Column].num != 0 && blocks[Row, Column].num == blocks[Row, Column - 1].num)
-                            return true;
-                    }
-
-            }
-
-            else if (n == 4)
-            {
-                for (int Row = 0; Row < 4; Row++)
-                    for (int Column = 0; Column < 4; Column++)
-                    {
-                        if (blocks[Row, Column].num != 0)
-                        {
-                            int p = Column + 1;
-                            for (; p < 4; p++)
-                            {
-                                if (blocks[Row, p].num == 0)
-                                    return true;
-                            }
-                        }
-                    }
-                for (int Row = 0; Row < 4; Row++)
-                    for (int Column = 1; Column <= 3; Column++)
-                    {
-                        if (blocks[Row, Column].num != 0 && blocks[Row, Column].num == blocks[Row, Column - 1].num)
-                            return true;
-                    }
-            }
-
             return false;
-
         }
+
+        private bool canMoveLeft(Block[,] blks)
+        {
+            for (int row = 0; row < 4; row++)
+            {
+                int startCol = 0;
+                int endCol = 1;
+                while (startCol < 4 && endCol < 4)
+                {
+                    while (blks[row,endCol].num == 0 && endCol < 4)
+                    {
+                        endCol++;
+                    }
+                    while (blks[row, startCol].num == 0 && startCol < 4)
+                    {
+                        startCol++;
+                    }
+                    if (startCol >= 4 || endCol >= 4)
+                    {
+                        return false;
+                    }
+                    if (blks[row,startCol].num == blks[row,endCol].num)
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
         public int move(Direction dir)
         {
             int n = 1;
