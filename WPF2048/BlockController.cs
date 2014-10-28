@@ -375,6 +375,7 @@ namespace WPF2048
                     else // blks[row, emptyCol].num != 0
                     {
                         // case 2 4 4 0, startCol == emptyCol 
+                        // case 2 2 4 8
                         if (endCol < 4 && blks[row,startCol].num == blks[row,endCol].num)
                         {
                             blks[row, emptyCol].num = blks[row, startCol].num * 2;
@@ -388,7 +389,7 @@ namespace WPF2048
 
                             emptyCol = emptyCol + 1;
                             startCol = endCol + 1;
-                            endCol = startCol + 2;
+                            endCol = startCol + 1;
                         }
                         else
                         {
